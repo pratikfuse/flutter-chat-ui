@@ -10,7 +10,10 @@ NeuThemeData lightTheme = NeuThemeData(
     curveType: CurveType.concave,
     primaryColor: lightPrimaryColor,
     fontFamily: 'LatoFont',
-    buttonColor: lightPrimaryColor,
+    accentColor: Colors.red,
+    buttonColor: darkPrimaryColor,
+    buttonTheme: ButtonThemeData(
+        buttonColor: Colors.grey, textTheme: ButtonTextTheme.accent),
     textTheme: TextTheme(
       headline5: TextStyle(color: darkPrimaryColor),
       headline6: TextStyle(color: darkPrimaryColor),

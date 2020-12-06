@@ -11,34 +11,51 @@ class AppHeader extends StatefulWidget {
 
 class _AppHeaderState extends State<AppHeader>
     with SingleTickerProviderStateMixin {
-  static const Duration toggleDuration = Duration(milliseconds: 500);
+  TextEditingController controller;
+  static const Duration toggleDuration = Duration(milliseconds: 300);
   AnimationController animationController;
   Animation animation;
+  FocusNode focusNode;
+  bool isSearchExpanded = false;
 
   @override
   void initState() {
     super.initState();
-    animationController =
-        AnimationController(vsync: this, duration: toggleDuration);
-    animation = IntTween(begin: -1, end: 0).animate(animationController);
-  }
-
-  void _toggleSearch() {
-    setState(() {
-      isSearchExpanded = !isSearchExpanded;
-      if (isSearchExpanded) {
-        animationController.forward();
+    focusNode = FocusNode();
+    focusNode.addListener(() {
+      if (focusNode.hasFocus) {
+        _openSearch();
         return;
       }
-      animationController.reverse();
+      _hideSearch();
     });
+    controller = TextEditingController();
+    animationController =
+        AnimationController(vsync: this, duration: toggleDuration);
+    animation = Tween(begin: 7, end: 1.25).animate(CurvedAnimation(
+        parent: animationController,
+        curve: Curves.bounceIn,
+        reverseCurve: Curves.bounceOut));
   }
 
-  bool isSearchExpanded = false;
+  void _openSearch() {
+    setState(() {
+      isSearchExpanded = true;
+    });
+    animationController.forward();
+  }
+
+  void _hideSearch() {
+    setState(() {
+      isSearchExpanded = false;
+    });
+    controller.clear();
+    animationController.reverse();
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    print(size.width);
     return Consumer<AppTheme>(builder: (context, theme, child) {
       return Container(
         width: size.width,
@@ -57,23 +74,30 @@ class _AppHeaderState extends State<AppHeader>
                 borderRadius: BorderRadius.circular(100.0),
               ),
             ),
-            Expanded(
-                child: Text("Messages",
-                    style: NeuTheme.of(context).textTheme.headline5),
-                flex: 1),
-            Expanded(
-                flex: 0,
-                child: SizedBox(
-                  width: size.width / 7,
-                  child: NeuButton(
-                      onPressed: theme.toggleTheme,
-                      child: Icon(Icons.search,
-                          color: theme.isLight ? Colors.grey : Colors.white),
-                      decoration: NeumorphicDecoration(
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                          color: theme.current.buttonColor)),
-                ))
+            AnimatedBuilder(
+              animation: animation,
+              builder: (context, widget) => NeuCard(
+                  // height: size.height / 15,
+                  width: size.width / animation.value,
+                  child: TextField(
+                    controller: controller,
+                    textAlign: TextAlign.start,
+                    cursorColor:
+                        NeuTheme.of(context).buttonColor.withOpacity(0.7),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      enabledBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      disabledBorder: InputBorder.none,
+                      prefixIcon: Icon(Icons.search_outlined,
+                          size: 30.0, color: NeuTheme.of(context).buttonColor),
+                    ),
+                    focusNode: focusNode,
+                    textAlignVertical: TextAlignVertical.center,
+                    style: NeuTheme.of(context).textTheme.subtitle1,
+                  )),
+            ),
           ],
         ),
         height: size.height / 15,

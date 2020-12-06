@@ -11,9 +11,11 @@ NeuThemeData darkTheme = NeuThemeData(
   fontFamily: "LatoFont",
   primaryColor: Colors.black,
   brightness: Brightness.dark,
-  buttonColor: darkPrimaryColor,
+  buttonColor: lightPrimaryColor,
+  buttonTheme: ButtonThemeData(
+      buttonColor: Colors.white, textTheme: ButtonTextTheme.primary),
   textTheme: TextTheme(
-    headline5: TextStyle(color: lightPrimaryColor, fontFamily: "Lato"),
+    headline5: TextStyle(color: lightPrimaryColor),
     headline6: TextStyle(color: lightPrimaryColor),
     headline4: TextStyle(color: lightPrimaryColor),
     headline3: TextStyle(color: lightPrimaryColor),
